@@ -1,0 +1,198 @@
+﻿
+
+<div class="bgcontainer">
+    <div class="main-div">
+        <div style ="margin:100px">
+    <form>
+        <table>
+            <tbody>
+                    <tr class="form-group form-inline padding">
+            <td>
+                            <label for="CustomerName" class="padding">Customer Name</label>
+                    </td>
+                    <td>
+                            <input type="text" class="form-control padding" id="CustomerName" placeholder="Customer Name" required>
+                            <small id="CustomerNameerror" class="form-text text-muted"></small>
+                    </td>
+            
+        </tr>
+                    <tr class="form-group form-inline padding">
+                        <td>            <label for="bankaccountnumber" class="padding">Bank Account Number</label> </td>
+                <td>
+                            <input type="text" class="form-control padding" id="bankaccountnumber" placeholder="Bank Account Number" pattern="[0-9]+" maxlength="10" required>
+                            <small id="bankaccountnumbererror" class="form-text text-muted"></small>
+                        </td>
+        </tr>
+                    <tr class="form-group form-inline padding">
+                        <td>            <label for="reenterbankaccountnumber" class="padding">Re-enter Bank Account Number</label> </td>
+                        <td>
+                            <input type="text" class="form-control padding" id="reenterbankaccountnumber" placeholder="Re-enter Bank Account Number" pattern="[0-9]+" maxlength="10" required>
+                            <small id="reenterbankaccountnumbererror" class="form-text text-muted"></small>
+                        </td>
+                    </tr>
+                    <tr class="form-group form-inline padding">
+                        <td>            <label for="IFSCcode" class="padding">IFSC code</label> </td>
+                        <td>
+                            <input type="text" class="form-control padding" id="IFSCcode" placeholder="IFSC code" maxlength="11"> 
+                            <small id="IFSCcodeerror" class="form-text text-muted"></small>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+        </div>
+        <div style="margin:50px" class="scrollbar">
+            <table id='record' class="table ">
+            <tr>
+                <th scope ="col">S.No</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope ="col">Bank Account Number</thscope>
+                     <th scope="col">IFSC code</th>
+            </tr>
+        </table>
+        </div>
+        
+    </div>
+</div>
+
+
+   
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function (){
+
+        let IFSC_isvalid = false;
+        let snNo =1;
+
+        $("#IFSCcode").on("keyup", function(){
+
+           
+            if ($("#IFSCcode").val().length==11){
+                $.ajax({
+
+                    type: "GET",
+
+                    url: "https://ifsc.razorpay.com/" + $("#IFSCcode").val(),
+
+
+
+                    success: function (response) {
+                        document.getElementById("IFSCcode").classList.remove("red-border");
+                        document.getElementById("IFSCcode").classList.remove("red");
+                        document.getElementById("IFSCcode").classList.add("green-border");
+                        document.getElementById("IFSCcode").classList.add("green");
+
+                        document.getElementById("IFSCcodeerror").textContent = "IFSC code is Valid";
+                        IFSC_isvalid = true;
+
+                    },
+
+                    error: function (xhr, status, error) {
+                        document.getElementById("IFSCcode").classList.remove("green-border");
+                        document.getElementById("IFSCcode").classList.remove("green");
+                        document.getElementById("IFSCcode").classList.add("red-border");
+                        document.getElementById("IFSCcode").classList.add("red");
+                        document.getElementById("IFSCcodeerror").textContent = "Enter valid IFSC code";
+                        IFSC_isvalid = false;
+
+                    }
+
+                });
+            }else{
+                document.getElementById("IFSCcode").classList.remove("green-border");
+                document.getElementById("IFSCcode").classList.remove("green");
+                document.getElementById("IFSCcode").classList.add("red-border"); 
+                document.getElementById("IFSCcode").classList.add("red");
+                document.getElementById("IFSCcodeerror").textContent = "Enter 11 character IFSC code";
+                IFSC_isvalid = false;
+            }
+            })
+
+        $('#CustomerName').keypress(function (e) {
+            var regex = new RegExp("^[a-zA-Z ]+$");
+            var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+            if (!regex.test(key) || ($('#CustomerName').val().length == 0) && e.charCode ==32) {
+                
+                e.preventDefault();
+              return false;
+         
+            }
+     
+        });
+
+
+            $("form").on("submit", function (event){
+
+         
+            var formData = {
+                CustomerName: $("#CustomerName").val(),
+                bankaccountnumber: $("#bankaccountnumber").val(),
+                reenterbankaccountnumber: $("#reenterbankaccountnumber").val(),
+                IFSCcode: $("#IFSCcode").val()
+            };
+
+            if(formData.bankaccountnumber.length !=10){
+                document.getElementById("bankaccountnumber").classList.remove("green-border");
+                document.getElementById("bankaccountnumber").classList.remove("green");
+                document.getElementById("bankaccountnumber").classList.add("red-border");
+                document.getElementById("bankaccountnumber").classList.add("red");
+                document.getElementById("bankaccountnumbererror").textContent = "Enter 10 Digit Bank account number";
+    
+            }else if(formData.reenterbankaccountnumber.length !=10){
+                document.getElementById("reenterbankaccountnumber").classList.remove("green-border");
+                document.getElementById("reenterbankaccountnumber").classList.remove("green");
+                document.getElementById("reenterbankaccountnumber").classList.add("red-border");
+                document.getElementById("reenterbankaccountnumber").classList.add("red");
+                document.getElementById("reenterbankaccountnumbererror").textContent = "Enter 10 Digit Reenter Bank account number";
+            } else if (formData.reenterbankaccountnumber != formData.bankaccountnumber){
+                document.getElementById("reenterbankaccountnumber").classList.remove("green-border");
+                document.getElementById("reenterbankaccountnumber").classList.remove("green");
+                document.getElementById("reenterbankaccountnumber").classList.add("red-border");
+                document.getElementById("reenterbankaccountnumber").classList.add("red");
+                document.getElementById("reenterbankaccountnumbererror").textContent = "Re-Enter same Bank account number as above";
+            }
+            else if(IFSC_isvalid == false){
+                document.getElementById("IFSCcode").classList.remove("green-border");
+                document.getElementById("IFSCcode").classList.remove("green");
+                document.getElementById("IFSCcode").classList.add("red-border");
+                document.getElementById("IFSCcode").classList.add("red");
+                document.getElementById("IFSCcodeerror").textContent = "Enter 11 character IFSC code";
+            }else{
+                if (!this.snNo) this.snNo = 1;
+                var task = $('#first_name').val(),
+                    yes = $('#yes:checked').val(),
+                    no = $('#no:checked').val(),
+                    desc = $('input[name="description"]').val(),
+                    type = $('#ttype').val();
+
+                var comp = yes ? 'yes' : 'no';
+
+                $('#record').append(
+                    "<tr><td>" + this.snNo + "</td>" +
+                    "<td>" + formData.CustomerName + "</td>" +
+                    "<td>" + formData.bankaccountnumber + "</td>" +
+                    "<td>" + formData.IFSCcode + "</td></tr>"
+                )
+                this.snNo += 1;
+            }
+
+
+                      
+
+
+            
+
+            event.preventDefault();
+            })
+
+
+
+
+           
+        
+})    
+</script>
